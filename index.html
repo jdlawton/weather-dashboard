@@ -29,23 +29,11 @@
                 
                 <!-- The card that holds the search history -->
                 <div class="card">
-                    <div class="card-body">
-                        <div>
-                            <h4>Past City 1</h4>
-                        </div>
-                        <div>
-                            <h4>Past CIty 2</h4>
-                        </div>
-                        <div>
-                            <h4>Past CIty 3</h4>
-                        </div>
-                        <div>
-                            <h4>Past CIty 4</h4>
-                        </div>
-                        <div>
-                            <h4>Past CIty 5</h4>
-                        </div>
+                    <div class="card-header">
+                        <h6>Search History</h6>
+                        <button class="btn btn-secondary" id="clear-history">Clear</button>
                     </div>
+                    <div class="card-body" id="history"></div>
                 </div>
 
             </div>
@@ -53,7 +41,7 @@
             <!-- The large card in the upper right column that holds the current weather information -->
             <div class="col-12 col-md-9 display-col">
                 <div class="card">
-                    <h3 class="card-header"><span id="name"></span> - <span id="date"></span> <span id="icon">#icon#</span></h3>
+                    <h3 class="card-header"><span id="name"></span> - <span id="date"></span> <span id="icon">##icon##</span></h3>
                     <div class="card-body">
                         <p>Temperature: <span id="temp"></span></p>
                         <p>Humidity: <span id="humidity"></span></p>

@@ -24,3 +24,13 @@
     font-size: 24px;
     font-weight: bolder;
 }
+
+.card-header {
+    justify-content: space-between;
+}
+
+.card-header h6 {
+    display: inline;
+    padding-right: 100px;
+}
+
