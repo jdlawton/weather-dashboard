@@ -23,7 +23,6 @@
                     </form>
                 </div>
                 <div class="card">
-                    <!-- <h6 class="card-header">Previous Searches</h6> -->
                     <div class="card-body">
                         <div>
                             <h4>Past City 1</h4>
@@ -46,20 +45,15 @@
             </div>
             <div class="col-12 col-md-9 display-col">
                 <div class="card">
-                    <h3 class="card-header">City Name - Date #icon#</h3>
+                    <h3 class="card-header"><span id="name"></span> - <span id="date"></span> <span id="icon">#icon#</span></h3>
                     <div class="card-body">
-                        <p>Temperature</p>
-                        <p>Humidity</p>
-                        <p>Wind Speed</p>
-                        <p>UV Index: <span>####</span></p>
+                        <p>Temperature: <span id="temp"></span></p>
+                        <p>Humidity: <span id="humidity"></span></p>
+                        <p>Wind Speed: <span id="wind"></span></p>
+                        <p>UV Index: <span id="uv">####</span></p>
                     </div>
                 </div>
                 
-                <!-- <div class="row">
-                    <div class="col">
-                        <h2>5-Day Forecast</h2>
-                    </div>
-                </div> -->
 
                 <div class = "card">
 
@@ -129,5 +123,8 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="./assets/js/script.js"></script>
 </body>
 </html>
