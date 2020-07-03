@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primarily using Bootstrap for our CSS framework -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
     <link rel="stylesheet" href="./assets/css/style.css" />
     <title>Weather Dashboard</title>
@@ -11,6 +13,8 @@
     <header class="header">
         <h1>Weather Dashboard</h1>
     </header>
+    
+    <!-- Bootstrip Grid for laying out the CSS elements. I am choosing to primarily display everyting as card elements -->
     <div class="container-fluid">
         <div class = "row">
             <div class="col-12 col-md-3 search-col">
@@ -18,10 +22,12 @@
                     <h3 class="card-header">Search for a City</h3>
                     <form id="search-form" class="card-body">
                         <label class="form-label" for="city"></label>
-                        <input name="city" id="city" type="text" autofocus="true" class="form-input" />
+                        <input name="city" id="search-city" type="text" autofocus="true" class="form-input" />
                         <button type="submit" class="btn btn-primary">Go</button>
                     </form>
                 </div>
+                
+                <!-- The card that holds the search history -->
                 <div class="card">
                     <div class="card-body">
                         <div>
@@ -43,6 +49,8 @@
                 </div>
 
             </div>
+
+            <!-- The large card in the upper right column that holds the current weather information -->
             <div class="col-12 col-md-9 display-col">
                 <div class="card">
                     <h3 class="card-header"><span id="name"></span> - <span id="date"></span> <span id="icon">#icon#</span></h3>
@@ -50,13 +58,12 @@
                         <p>Temperature: <span id="temp"></span></p>
                         <p>Humidity: <span id="humidity"></span></p>
                         <p>Wind Speed: <span id="wind"></span></p>
-                        <p>UV Index: <span id="uv">####</span></p>
+                        <p>UV Index: <span id="uv"></span></p>
                     </div>
                 </div>
                 
-
+                <!-- the cards that will be used to display the 5-day forecast, it is one larger card to group them together with a nested card to display each day's info -->
                 <div class = "card">
-
                     <div class="card-header">
                         <h3 class="card-title">5-Day Forecast</h3>
                     </div>
@@ -124,6 +131,7 @@
         </div>
     </div>
 
+    <!-- I'm also including moment.js to make working with the dates easier -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="./assets/js/script.js"></script>
 </body>
