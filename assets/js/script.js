@@ -11,44 +11,14 @@ var currentWeather = {
     icon: ""
 }
 
-//Array of objects to store the forecast data.
+//Array used to store the forecast data, each day in the forecast will be stored as
+//an object within the array.
 var forecast = [];
-/*[
-    {
-        date: "",
-        icon: "",
-        temp: "",
-        humidity: ""
-    },
-    {
-        date: "",
-        icon: "",
-        temp: "",
-        humidity: ""
-    },
-    {
-        date: "",
-        icon: "",
-        temp: "",
-        humidity: ""
-    },
-    {
-        date: "",
-        icon: "",
-        temp: "",
-        humidity: ""
-    },
-    {
-        date: "",
-        icon: "",
-        temp: "",
-        humidity: ""
-    }
-]*/
 
 //array for storing the previously searched cities
 var searchHistory = [];
 
+//the OpenWeather api key used for this project
 var apiKey = "37aaca1ccbcb9f155c5f005b5bdbf024";
 
 //querySelectors for various page elements I will need to reference in the sccript.
@@ -158,6 +128,8 @@ var getForecast = function (city) {
 
 }
 
+//displayForecast takes the data from the forecast array and creates individual cards for each day. Those cards are then 
+//displayed within the 5-day forecast container on the page.
 var displayForecast = function () {
     //console.log("inside displayForecast");
     for (var i=0; i<forecast.length; i++) {
@@ -244,6 +216,7 @@ var formSubmitHandler = function(event) {
         searchHistory.push(searchCity);
         localStorage.removeItem("history");
         localStorage.setItem("history", JSON.stringify(searchHistory));
+        clearForecast();
         displayHistory();
         searchInputEl.value = "";
     }
@@ -259,26 +232,28 @@ var clearHistory = function() {
     displayHistory();
 }
 
+//uvCheck will compare the uv index from OpenWeather and classify it as low, moderate, high, very high, or extreme
+//it will then display that alert next to the UV index data and color code it.
 var uvCheck = function() {
     if (currentWeather.uv < 3) {
         currentWeather.uvAlert = "low";
         uvAlertEl.textContent = "low";
         uvAlertEl.classList.add("alert-success");
-        console.log("UV is low");
+        //console.log("UV is low");
         return;
     }
     else if (currentWeather.uv < 6) {
         currentWeather.uvAlert = "moderate";
         uvAlertEl.textContent = "moderate";
         uvAlertEl.classList.add("alert-warning");
-        console.log("UV is moderate");
+        //console.log("UV is moderate");
         return;
     }
     else if (currentWeather.uv < 8) {
         currentWeather.uvAlert = "high";
         uvAlertEl.textContent = "high";
         uvAlertEl.classList.add("alert-danger");
-        console.log("UV is high");
+        //console.log("UV is high");
         return;
     }
     else if (currentWeather.uv < 11) {
@@ -292,8 +267,26 @@ var uvCheck = function() {
         currentWeather.uvAlert = "extreme";
         uvAlertEl.textContent = "extreme";
         uvAlertEl.classList.add("alert-danger");
-        console.log("UV is extreme");
+        //console.log("UV is extreme");
     }
+}
+
+//clears the forecast data from the page and empty's the forecast array
+var clearForecast = function () {
+    forecast = [];
+    forecastEl.innerHTML = "";
+}
+
+//this function allows the user to click on a city listed in the search history and search for that city
+var historyClickHandler = function (event) {
+    //console.log("inside historyClickHandler");
+    var histCity = event.target.textContent;
+    console.log ("searching for: " + histCity);
+    if (histCity) {
+        clearForecast();
+        getWeather(histCity);
+    }
+
 }
 
 //console.log(currentWeather);
@@ -302,3 +295,4 @@ loadHistory();
 //event listener for when the user clicks the submit button in the form
 formEl.addEventListener("submit", formSubmitHandler);
 clearBtnEl.addEventListener("click", clearHistory);
+historyEl.addEventListener("click", historyClickHandler);
