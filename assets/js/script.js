@@ -11,8 +11,45 @@ var currentWeather = {
     icon: ""
 }
 
+//Array of objects to store the forecast data.
+var forecast = [];
+/*[
+    {
+        date: "",
+        icon: "",
+        temp: "",
+        humidity: ""
+    },
+    {
+        date: "",
+        icon: "",
+        temp: "",
+        humidity: ""
+    },
+    {
+        date: "",
+        icon: "",
+        temp: "",
+        humidity: ""
+    },
+    {
+        date: "",
+        icon: "",
+        temp: "",
+        humidity: ""
+    },
+    {
+        date: "",
+        icon: "",
+        temp: "",
+        humidity: ""
+    }
+]*/
+
 //array for storing the previously searched cities
 var searchHistory = [];
+
+var apiKey = "37aaca1ccbcb9f155c5f005b5bdbf024";
 
 //querySelectors for various page elements I will need to reference in the sccript.
 var cityNameEl = document.querySelector("#name");
@@ -27,6 +64,9 @@ var formEl = document.querySelector("#search-form");
 var historyEl = document.querySelector("#history");
 var clearBtnEl = document.querySelector("#clear-history");
 var uvAlertEl = document.querySelector("#uv-alert");
+var forecastEl = document.querySelector("#forecast-container");
+
+
 
 
 //getWeather is the function that makes the api calls to OpenWeather. The city parameter is passed to it from searchFormHandler.
@@ -35,7 +75,7 @@ var uvAlertEl = document.querySelector("#uv-alert");
 //Once the second call is done, it calls displayWeather to put all of the info up on the page.
 var getWeather = function (city){
 
-    var apiUrl = "http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=imperial&appid=37aaca1ccbcb9f155c5f005b5bdbf024";
+    var apiUrl = "http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=imperial&appid=" + apiKey;
     var lat = "";
     var lon = "";
     fetch(apiUrl).then(function(response) {
@@ -54,19 +94,107 @@ var getWeather = function (city){
 
                 //console.log("lat: " + lat + " lon: " + lon);
 
-                fetch("http://api.openweathermap.org/data/2.5/uvi?appid=37aaca1ccbcb9f155c5f005b5bdbf024&lat="+lat+"&lon="+lon)
+                var uvUrl = "http://api.openweathermap.org/data/2.5/uvi?appid=" + apiKey + "&lat="+lat+"&lon="+lon;
+                fetch(uvUrl)
                 .then(function(uvResponse) {
                     uvResponse.json().then(function(uvData) {
                         //console.log(uvData);
                         currentWeather.uv = uvData.value;
                         //console.log("UV: " + currentWeather.uv);
                         displayWeather();
+                        getForecast(city);
                     });
                 });
 
             });
         }
     });
+}
+
+//getForecast takes the city the user searched for (from getWeather) and makes an api call to get the 5-day forecast
+//it then iterates through the array of data returned from OpenWeather and pulls out the relevant data from the NOON
+//forecast, ignoring any data returned for the same day as today. It creates an object for each day and then pushes
+//that object to the forecast array so the data can be easily retrieved later on.
+var getForecast = function (city) {
+    //console.log("inside getForecast");
+    //console.log("city: " + city);
+    var forecastUrl = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&units=imperial&appid=" + apiKey;
+    fetch(forecastUrl).then(function(response) {
+        response.json().then(function(data) {
+            //console.log(data);
+            //get today and format it so it can be easily compared with the dates returned by the api call
+            //I want to ignore any data with a date that matches today.
+            var today = moment().format("YYYY-MM-DD");
+            //console.log(today);
+            for (var i=0; i<data.list.length; i++){
+                //console.log("city name: " + data.city.name);
+                //console.log("logging date/time: " + data.list[i].dt_txt);
+
+                //OpenWeather returns a value called dt_txt which is the date and the time separated by a " ".
+                //I split this string and save it to dateTime where [0] is the date and [1] is the time.
+                var dateTime = data.list[i].dt_txt.split(' ');
+                //console.log ("Date: " + dateTime[0]);
+                //console.log ("Time: " + dateTime[1]);
+
+                //this is the data we want to add, anything with a date not today and with a time of noon
+                if (dateTime[0] !== today && dateTime[1] === "12:00:00" ) {
+                    
+                    var futureDate = {
+                        date: moment(dateTime[0]).format("MM/DD/YYYY"),
+                        time: dateTime[1],
+                        icon: data.list[i].weather[0].icon,
+                        temp: data.list[i].main.temp,
+                        humidity: data.list[i].main.humidity
+                    };
+                    forecast.push(futureDate);
+                }
+
+            }
+            //console.log("forecast array");
+            //console.log(forecast);
+            displayForecast();
+        })
+    });
+
+}
+
+var displayForecast = function () {
+    //console.log("inside displayForecast");
+    for (var i=0; i<forecast.length; i++) {
+        var cardContainerEl = document.createElement("div");
+        cardContainerEl.classList.add("col");
+
+        var cardEl = document.createElement("div");
+        cardEl.classList.add("card");
+
+        var cardBodyEl = document.createElement("div");
+        cardBodyEl.classList.add("card-body");
+
+        var dateEl = document.createElement("h5");
+        dateEl.classList.add("card-title");
+        dateEl.innerHTML = forecast[i].date;
+        cardBodyEl.appendChild(dateEl);
+
+        var iconEl = document.createElement("p");
+        iconEl.classList.add("card-text");
+        iconEl.innerHTML = "<img src='http://openweathermap.org/img/wn/" + forecast[i].icon + "@2x.png'></img>";
+        cardBodyEl.appendChild(iconEl);
+
+        var tempEl = document.createElement("p");
+        tempEl.classList.add("card-text");
+        tempEl.innerHTML = "Temp: " + forecast[i].temp;
+        cardBodyEl.appendChild(tempEl);
+
+        var humidityEl = document.createElement("p");
+        humidityEl.classList.add("card-text");
+        humidityEl.innerHTML = "Humidity: " + forecast[i].humidity
+        cardBodyEl.appendChild(humidityEl);
+
+        cardEl.appendChild(cardBodyEl);
+        cardContainerEl.appendChild(cardEl);
+        forecastEl.appendChild(cardContainerEl);
+
+    }
 }
 
 //displays the information that has been collected from the api calls onto the page.
@@ -157,7 +285,7 @@ var uvCheck = function() {
         currentWeather.uvAlert = "very high";
         uvAlertEl.textContent = "very high";
         uvAlertEl.classList.add("alert-danger");
-        console.log("UV is very high");
+        //console.log("UV is very high");
         return;
     }
     else {
