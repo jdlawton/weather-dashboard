@@ -7,6 +7,7 @@ var currentWeather = {
     humidity: "",
     wind: "",
     uv: "",
+    uvAlert: "",
     icon: ""
 }
 
@@ -25,6 +26,7 @@ var searchInputEl = document.querySelector("#search-city");
 var formEl = document.querySelector("#search-form");
 var historyEl = document.querySelector("#history");
 var clearBtnEl = document.querySelector("#clear-history");
+var uvAlertEl = document.querySelector("#uv-alert");
 
 
 //getWeather is the function that makes the api calls to OpenWeather. The city parameter is passed to it from searchFormHandler.
@@ -33,13 +35,13 @@ var clearBtnEl = document.querySelector("#clear-history");
 //Once the second call is done, it calls displayWeather to put all of the info up on the page.
 var getWeather = function (city){
 
-    var apiUrl = "http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=imperial&appid=################";
+    var apiUrl = "http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=imperial&appid=37aaca1ccbcb9f155c5f005b5bdbf024";
     var lat = "";
     var lon = "";
     fetch(apiUrl).then(function(response) {
         if(response.ok) {
             response.json().then(function(data) {
-                console.log(data);
+                //console.log(data);
                 currentWeather.name = data.name;
                 currentWeather.date = moment().format("dddd, MMMM Do YYYY");
                 currentWeather.temp = data.main.temp + " &#176F";
@@ -48,11 +50,11 @@ var getWeather = function (city){
                 currentWeather.icon = data.weather[0].icon;
                 lat = data.coord.lat;
                 lon = data.coord.lon;
-                console.log(currentWeather);
+                //console.log(currentWeather);
 
                 //console.log("lat: " + lat + " lon: " + lon);
 
-                fetch("http://api.openweathermap.org/data/2.5/uvi?appid=################&lat="+lat+"&lon="+lon)
+                fetch("http://api.openweathermap.org/data/2.5/uvi?appid=37aaca1ccbcb9f155c5f005b5bdbf024&lat="+lat+"&lon="+lon)
                 .then(function(uvResponse) {
                     uvResponse.json().then(function(uvData) {
                         //console.log(uvData);
@@ -77,12 +79,13 @@ var displayWeather = function() {
     curWindEl.innerHTML = currentWeather.wind;
     curUvEl.innerHTML = currentWeather.uv;
     curIconEl.innerHTML = "<img src='http://openweathermap.org/img/wn/" + currentWeather.icon + "@2x.png'></img>";
+    uvCheck();
 
 }
 
 //displays the searchHistory array into the history div element on the page
 var displayHistory = function() {
-    console.log("inside displayHistory");
+    //console.log("inside displayHistory");
     historyEl.innerHTML = "";
     for (var i = 0; i<searchHistory.length; i++) {
         var historyDiv = document.createElement("div");
@@ -93,7 +96,7 @@ var displayHistory = function() {
 
 //loads the search history from localStorage into the searchHistory array and then calls displayHistory function.
 var loadHistory = function() {
-    console.log("inside loadHistory");
+    //console.log("inside loadHistory");
     searchHistory = JSON.parse(localStorage.getItem("history"));
     if (!searchHistory) {
         searchHistory = [];
@@ -121,12 +124,49 @@ var formSubmitHandler = function(event) {
     }
 }
 
+//function is called when the clear history button is pressed.
 var clearHistory = function() {
     localStorage.removeItem("history");
     searchHistory = [];
     displayHistory();
 }
 
+var uvCheck = function() {
+    if (currentWeather.uv < 3) {
+        currentWeather.uvAlert = "low";
+        uvAlertEl.textContent = "low";
+        uvAlertEl.classList.add("alert-success");
+        console.log("UV is low");
+        return;
+    }
+    else if (currentWeather.uv < 6) {
+        currentWeather.uvAlert = "moderate";
+        uvAlertEl.textContent = "moderate";
+        uvAlertEl.classList.add("alert-warning");
+        console.log("UV is moderate");
+        return;
+    }
+    else if (currentWeather.uv < 8) {
+        currentWeather.uvAlert = "high";
+        uvAlertEl.textContent = "high";
+        uvAlertEl.classList.add("alert-danger");
+        console.log("UV is high");
+        return;
+    }
+    else if (currentWeather.uv < 11) {
+        currentWeather.uvAlert = "very high";
+        uvAlertEl.textContent = "very high";
+        uvAlertEl.classList.add("alert-danger");
+        console.log("UV is very high");
+        return;
+    }
+    else {
+        currentWeather.uvAlert = "extreme";
+        uvAlertEl.textContent = "extreme";
+        uvAlertEl.classList.add("alert-danger");
+        console.log("UV is extreme");
+    }
+}
 
 //console.log(currentWeather);
 loadHistory();
