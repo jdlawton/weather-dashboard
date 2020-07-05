@@ -35,6 +35,7 @@ var historyEl = document.querySelector("#history");
 var clearBtnEl = document.querySelector("#clear-history");
 var uvAlertEl = document.querySelector("#uv-alert");
 var forecastEl = document.querySelector("#forecast-container");
+var resultsContEl = document.querySelector("#results-container");
 
 
 
@@ -138,6 +139,7 @@ var displayForecast = function () {
 
         var cardEl = document.createElement("div");
         cardEl.classList.add("card");
+        cardEl.classList.add("forecast-card");
 
         var cardBodyEl = document.createElement("div");
         cardBodyEl.classList.add("card-body");
@@ -172,6 +174,7 @@ var displayForecast = function () {
 //displays the information that has been collected from the api calls onto the page.
 var displayWeather = function() {
     //console.log("inside displayWeather");
+    resultsContEl.style.display = "block";
     cityNameEl.innerHTML = currentWeather.name;
     curDateEl.innerHTML = currentWeather.date;
     curTempEl.innerHTML = currentWeather.temp;
@@ -189,6 +192,7 @@ var displayHistory = function() {
     historyEl.innerHTML = "";
     for (var i = 0; i<searchHistory.length; i++) {
         var historyDiv = document.createElement("div");
+        historyDiv.classList.add("history-item");
         historyDiv.innerHTML = "<h4>"+searchHistory[i]+"</h4>";
         historyEl.appendChild(historyDiv);
     }
@@ -281,7 +285,7 @@ var clearForecast = function () {
 var historyClickHandler = function (event) {
     //console.log("inside historyClickHandler");
     var histCity = event.target.textContent;
-    console.log ("searching for: " + histCity);
+    //console.log ("searching for: " + histCity);
     if (histCity) {
         clearForecast();
         getWeather(histCity);
