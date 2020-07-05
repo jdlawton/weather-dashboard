@@ -1,5 +1,5 @@
 
-//Current weather stored in an object. I find it easier to keep track of this way instead of making it 6 separate variables.
+//current weather stored in an object. I find it easier to keep track of this way instead of making it 6 separate variables.
 var currentWeather = {
     name: "",
     date: "",
@@ -11,7 +11,7 @@ var currentWeather = {
     icon: ""
 }
 
-//Array used to store the forecast data, each day in the forecast will be stored as
+//array used to store the forecast data, each day in the forecast will be stored as
 //an object within the array.
 var forecast = [];
 
@@ -62,9 +62,6 @@ var getWeather = function (city){
                 currentWeather.icon = data.weather[0].icon;
                 lat = data.coord.lat;
                 lon = data.coord.lon;
-                //console.log(currentWeather);
-
-                //console.log("lat: " + lat + " lon: " + lon);
 
                 var uvUrl = "http://api.openweathermap.org/data/2.5/uvi?appid=" + apiKey + "&lat="+lat+"&lon="+lon;
                 fetch(uvUrl)
@@ -73,7 +70,6 @@ var getWeather = function (city){
                         uvResponse.json().then(function(uvData) {
                             //console.log(uvData);
                             currentWeather.uv = uvData.value;
-                            //console.log("UV: " + currentWeather.uv);
                             displayWeather();
                             getForecast(city);
                         });
@@ -111,19 +107,16 @@ var getForecast = function (city) {
         if (response.ok) {
             response.json().then(function(data) {
                 //console.log(data);
+
                 //get today and format it so it can be easily compared with the dates returned by the api call
                 //I want to ignore any data with a date that matches today.
                 var today = moment().format("YYYY-MM-DD");
                 //console.log(today);
                 for (var i=0; i<data.list.length; i++){
-                    //console.log("city name: " + data.city.name);
-                    //console.log("logging date/time: " + data.list[i].dt_txt);
     
                     //OpenWeather returns a value called dt_txt which is the date and the time separated by a " ".
                     //I split this string and save it to dateTime where [0] is the date and [1] is the time.
                     var dateTime = data.list[i].dt_txt.split(' ');
-                    //console.log ("Date: " + dateTime[0]);
-                    //console.log ("Time: " + dateTime[1]);
     
                     //this is the data we want to add, anything with a date not today and with a time of noon
                     if (dateTime[0] !== today && dateTime[1] === "12:00:00" ) {
@@ -136,23 +129,17 @@ var getForecast = function (city) {
                         };
                         forecast.push(futureDate);
                     }
-    
                 }
-                //console.log("forecast array");
-                //console.log(forecast);
                 displayForecast();
             })
         }
         else {
             forecastEl.innerHTML = "Error: " + response.status + " " + response.statusText;
-            
         }
-        
     })
     .catch (function(error) {
         forecastEl.innerHTML = error.message;
     })
-
 }
 
 //displayForecast takes the data from the forecast array and creates individual cards for each day. Those cards are then 
@@ -200,8 +187,6 @@ var displayForecast = function () {
 
 //displays the information that has been collected from the api calls onto the page.
 var displayWeather = function() {
-    //console.log("inside displayWeather");
-    //resultsContEl.style.display = "block";
     curStatsEl.style.display = "block";
     forecastContEl.style.display = "block";
     cityNameEl.innerHTML = currentWeather.name;
@@ -240,20 +225,9 @@ var loadHistory = function() {
 //function called by the event listener, it gets the value from the input in the form, validates it, and then passes it on to 
 //the getWeather function.
 var formSubmitHandler = function(event) {
-    //debugger;
+
     //console.log("inside formSubmitHandler");
     event.preventDefault();
-    // currentWeather = {
-    //     name: "",
-    //     date: "",
-    //     temp: "",
-    //     humidity: "",
-    //     wind: "",
-    //     uv: "",
-    //     uvAlert: "",
-    //     icon: ""
-    // }
-    //displayWeather();
     var searchCity = searchInputEl.value.trim();
     //console.log ("Search City: " + searchCity);
     if (searchCity) {
@@ -290,35 +264,30 @@ var uvCheck = function() {
         currentWeather.uvAlert = "low";
         uvAlertEl.textContent = "low";
         uvAlertEl.classList.add("alert-success");
-        //console.log("UV is low");
         return;
     }
     else if (currentWeather.uv < 6) {
         currentWeather.uvAlert = "moderate";
         uvAlertEl.textContent = "moderate";
         uvAlertEl.classList.add("alert-warning");
-        //console.log("UV is moderate");
         return;
     }
     else if (currentWeather.uv < 8) {
         currentWeather.uvAlert = "high";
         uvAlertEl.textContent = "high";
         uvAlertEl.classList.add("alert-danger");
-        //console.log("UV is high");
         return;
     }
     else if (currentWeather.uv < 11) {
         currentWeather.uvAlert = "very high";
         uvAlertEl.textContent = "very high";
         uvAlertEl.classList.add("alert-danger");
-        //console.log("UV is very high");
         return;
     }
     else {
         currentWeather.uvAlert = "extreme";
         uvAlertEl.textContent = "extreme";
         uvAlertEl.classList.add("alert-danger");
-        //console.log("UV is extreme");
     }
 }
 
@@ -332,12 +301,10 @@ var clearForecast = function () {
 var historyClickHandler = function (event) {
     //console.log("inside historyClickHandler");
     var histCity = event.target.textContent;
-    //console.log ("searching for: " + histCity);
     if (histCity) {
         clearForecast();
         getWeather(histCity);
     }
-
 }
 
 //clears the data in the results column, hiding the forecast card as well as the card-body of the current weather.

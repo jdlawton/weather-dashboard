@@ -39,10 +39,6 @@
     padding-left: 10px;
 }
 
-#results-container {
-    display: block;
-}
-
 .form-input {
     border-color: lightslategray;
     border-style: solid;
