@@ -18,7 +18,7 @@
     <!-- Bootstrip Grid for laying out the CSS elements. I am choosing to primarily display everyting as card elements -->
     <div class="container-fluid">
         <div class = "row">
-            <div class="col-12 col-md-3">
+            <div class="col-12 col-lg-3">
                 <div class="card">
                     <h3 class="card-header">Search for a City</h3>
                     <form id="search-form" class="card-body">
@@ -40,10 +40,10 @@
             </div>
 
             <!-- The large card in the upper right column that holds the current weather information -->
-            <div class="col-12 col-md-9"  id="results-container">
+            <div class="col-12 col-lg-9"  id="results-container">
                 <div class="card">
-                    <h3 class="card-header"><span id="name"></span> - <span id="date"></span> <span id="icon">##icon##</span></h3>
-                    <div class="card-body">
+                    <h3 class="card-header"><span id="name"></span> <span id="date"></span> <span id="icon"></span></h3>
+                    <div class="card-body" id="current-stats">
                         <p>Temperature: <span id="temp"></span></p>
                         <p>Humidity: <span id="humidity"></span></p>
                         <p>Wind Speed: <span id="wind"></span></p>
@@ -52,12 +52,12 @@
                 </div>
                 
                 <!-- the cards that will be used to display the 5-day forecast, it is one larger card to group them together with a nested card to display each day's info -->
-                <div class = "card">
+                <div class = "card" id="forecast-container">
                     <div class="card-header">
                         <h3 class="card-title">5-Day Forecast</h3>
                     </div>
 
-                    <div class="row card-body" id="forecast-container">
+                    <div class="row card-body" id="forecast-body">
                     </div>
                 </div>
 

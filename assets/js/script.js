@@ -34,9 +34,10 @@ var formEl = document.querySelector("#search-form");
 var historyEl = document.querySelector("#history");
 var clearBtnEl = document.querySelector("#clear-history");
 var uvAlertEl = document.querySelector("#uv-alert");
-var forecastEl = document.querySelector("#forecast-container");
+var forecastEl = document.querySelector("#forecast-body");
 var resultsContEl = document.querySelector("#results-container");
-
+var forecastContEl = document.querySelector("#forecast-container");
+var curStatsEl = document.querySelector("#current-stats");
 
 
 
@@ -68,18 +69,34 @@ var getWeather = function (city){
                 var uvUrl = "http://api.openweathermap.org/data/2.5/uvi?appid=" + apiKey + "&lat="+lat+"&lon="+lon;
                 fetch(uvUrl)
                 .then(function(uvResponse) {
-                    uvResponse.json().then(function(uvData) {
-                        //console.log(uvData);
-                        currentWeather.uv = uvData.value;
-                        //console.log("UV: " + currentWeather.uv);
-                        displayWeather();
-                        getForecast(city);
-                    });
+                    if (uvResponse.ok) {
+                        uvResponse.json().then(function(uvData) {
+                            //console.log(uvData);
+                            currentWeather.uv = uvData.value;
+                            //console.log("UV: " + currentWeather.uv);
+                            displayWeather();
+                            getForecast(city);
+                        });
+                    }
+                    else {
+                        curUvEl.innerHTML = "Error";
+                        currentWeather.uv = "error";
+                    }
+                    
                 });
 
             });
+        } else {
+            //alert ("Error: " + response.statusText);
+            clearData();
+            cityNameEl.innerHTML = "Error: " + response.status + " " + city + " " + response.statusText;
+
+
         }
-    });
+    })
+    .catch (function(error) {
+        cityNameEl.innerHTML = error.message + " Please try again later.";
+    })
 }
 
 //getForecast takes the city the user searched for (from getWeather) and makes an api call to get the 5-day forecast
@@ -91,41 +108,50 @@ var getForecast = function (city) {
     //console.log("city: " + city);
     var forecastUrl = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&units=imperial&appid=" + apiKey;
     fetch(forecastUrl).then(function(response) {
-        response.json().then(function(data) {
-            //console.log(data);
-            //get today and format it so it can be easily compared with the dates returned by the api call
-            //I want to ignore any data with a date that matches today.
-            var today = moment().format("YYYY-MM-DD");
-            //console.log(today);
-            for (var i=0; i<data.list.length; i++){
-                //console.log("city name: " + data.city.name);
-                //console.log("logging date/time: " + data.list[i].dt_txt);
-
-                //OpenWeather returns a value called dt_txt which is the date and the time separated by a " ".
-                //I split this string and save it to dateTime where [0] is the date and [1] is the time.
-                var dateTime = data.list[i].dt_txt.split(' ');
-                //console.log ("Date: " + dateTime[0]);
-                //console.log ("Time: " + dateTime[1]);
-
-                //this is the data we want to add, anything with a date not today and with a time of noon
-                if (dateTime[0] !== today && dateTime[1] === "12:00:00" ) {
-                    
-                    var futureDate = {
-                        date: moment(dateTime[0]).format("MM/DD/YYYY"),
-                        time: dateTime[1],
-                        icon: data.list[i].weather[0].icon,
-                        temp: data.list[i].main.temp,
-                        humidity: data.list[i].main.humidity
-                    };
-                    forecast.push(futureDate);
+        if (response.ok) {
+            response.json().then(function(data) {
+                //console.log(data);
+                //get today and format it so it can be easily compared with the dates returned by the api call
+                //I want to ignore any data with a date that matches today.
+                var today = moment().format("YYYY-MM-DD");
+                //console.log(today);
+                for (var i=0; i<data.list.length; i++){
+                    //console.log("city name: " + data.city.name);
+                    //console.log("logging date/time: " + data.list[i].dt_txt);
+    
+                    //OpenWeather returns a value called dt_txt which is the date and the time separated by a " ".
+                    //I split this string and save it to dateTime where [0] is the date and [1] is the time.
+                    var dateTime = data.list[i].dt_txt.split(' ');
+                    //console.log ("Date: " + dateTime[0]);
+                    //console.log ("Time: " + dateTime[1]);
+    
+                    //this is the data we want to add, anything with a date not today and with a time of noon
+                    if (dateTime[0] !== today && dateTime[1] === "12:00:00" ) {
+                        var futureDate = {
+                            date: moment(dateTime[0]).format("MM/DD/YYYY"),
+                            time: dateTime[1],
+                            icon: data.list[i].weather[0].icon,
+                            temp: data.list[i].main.temp,
+                            humidity: data.list[i].main.humidity
+                        };
+                        forecast.push(futureDate);
+                    }
+    
                 }
-
-            }
-            //console.log("forecast array");
-            //console.log(forecast);
-            displayForecast();
-        })
-    });
+                //console.log("forecast array");
+                //console.log(forecast);
+                displayForecast();
+            })
+        }
+        else {
+            forecastEl.innerHTML = "Error: " + response.status + " " + response.statusText;
+            
+        }
+        
+    })
+    .catch (function(error) {
+        forecastEl.innerHTML = error.message;
+    })
 
 }
 
@@ -135,7 +161,8 @@ var displayForecast = function () {
     //console.log("inside displayForecast");
     for (var i=0; i<forecast.length; i++) {
         var cardContainerEl = document.createElement("div");
-        cardContainerEl.classList.add("col");
+        cardContainerEl.classList.add("col-xl");
+        cardContainerEl.classList.add("col-md-4");
 
         var cardEl = document.createElement("div");
         cardEl.classList.add("card");
@@ -174,7 +201,9 @@ var displayForecast = function () {
 //displays the information that has been collected from the api calls onto the page.
 var displayWeather = function() {
     //console.log("inside displayWeather");
-    resultsContEl.style.display = "block";
+    //resultsContEl.style.display = "block";
+    curStatsEl.style.display = "block";
+    forecastContEl.style.display = "block";
     cityNameEl.innerHTML = currentWeather.name;
     curDateEl.innerHTML = currentWeather.date;
     curTempEl.innerHTML = currentWeather.temp;
@@ -211,8 +240,20 @@ var loadHistory = function() {
 //function called by the event listener, it gets the value from the input in the form, validates it, and then passes it on to 
 //the getWeather function.
 var formSubmitHandler = function(event) {
+    //debugger;
     //console.log("inside formSubmitHandler");
     event.preventDefault();
+    // currentWeather = {
+    //     name: "",
+    //     date: "",
+    //     temp: "",
+    //     humidity: "",
+    //     wind: "",
+    //     uv: "",
+    //     uvAlert: "",
+    //     icon: ""
+    // }
+    //displayWeather();
     var searchCity = searchInputEl.value.trim();
     //console.log ("Search City: " + searchCity);
     if (searchCity) {
@@ -225,7 +266,8 @@ var formSubmitHandler = function(event) {
         searchInputEl.value = "";
     }
     else {
-        alert("Please enter a valid city name!");
+        //if getting the city name would return anything falsy, i.e. empty input field, just ignore it and return.
+        return;
     }
 }
 
@@ -238,7 +280,12 @@ var clearHistory = function() {
 
 //uvCheck will compare the uv index from OpenWeather and classify it as low, moderate, high, very high, or extreme
 //it will then display that alert next to the UV index data and color code it.
+//if currentWeather.uv === "error" then the fetch for the uv data failed and function will return w/o evaluating anything.
 var uvCheck = function() {
+    if (currentWeather.uv === "error") {
+        return;
+    }
+
     if (currentWeather.uv < 3) {
         currentWeather.uvAlert = "low";
         uvAlertEl.textContent = "low";
@@ -291,6 +338,17 @@ var historyClickHandler = function (event) {
         getWeather(histCity);
     }
 
+}
+
+//clears the data in the results column, hiding the forecast card as well as the card-body of the current weather.
+//it also clears all date from the card header other than the name which may be used for other things like
+//displaying error messages.
+var clearData = function () {
+    console.log("inside clearData");
+    curStatsEl.style.display = "none";
+    forecastContEl.style.display = "none";
+    curDateEl.innerHTML = "";
+    curIconEl.innerHTML = "";
 }
 
 //console.log(currentWeather);

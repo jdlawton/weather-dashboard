@@ -40,7 +40,7 @@
 }
 
 #results-container {
-    display: none;
+    display: block;
 }
 
 .form-input {
@@ -50,7 +50,7 @@
 
 }
 .form-input:focus {
-    outline:none
+    outline: none
 }
 
 .card-header {
@@ -59,4 +59,12 @@
 
 .forecast-card {
     background-color:  rgb(74, 180, 237);
+}
+
+#forecast-container {
+    display: none;
+}
+
+#current-stats {
+    display: none;
 }
