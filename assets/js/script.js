@@ -47,7 +47,7 @@ var curStatsEl = document.querySelector("#current-stats");
 //Once the second call is done, it calls displayWeather to put all of the info up on the page.
 var getWeather = function (city){
 
-    var apiUrl = "http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=imperial&appid=" + apiKey;
+    var apiUrl = "https://api.openweathermap.org/data/2.5/weather?q="+city+"&units=imperial&appid=" + apiKey;
     var lat = "";
     var lon = "";
     fetch(apiUrl).then(function(response) {
@@ -63,7 +63,7 @@ var getWeather = function (city){
                 lat = data.coord.lat;
                 lon = data.coord.lon;
 
-                var uvUrl = "http://api.openweathermap.org/data/2.5/uvi?appid=" + apiKey + "&lat="+lat+"&lon="+lon;
+                var uvUrl = "https://api.openweathermap.org/data/2.5/uvi?appid=" + apiKey + "&lat="+lat+"&lon="+lon;
                 fetch(uvUrl)
                 .then(function(uvResponse) {
                     if (uvResponse.ok) {
@@ -102,7 +102,7 @@ var getWeather = function (city){
 var getForecast = function (city) {
     //console.log("inside getForecast");
     //console.log("city: " + city);
-    var forecastUrl = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&units=imperial&appid=" + apiKey;
+    var forecastUrl = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&units=imperial&appid=" + apiKey;
     fetch(forecastUrl).then(function(response) {
         if (response.ok) {
             response.json().then(function(data) {
@@ -165,7 +165,7 @@ var displayForecast = function () {
 
         var iconEl = document.createElement("p");
         iconEl.classList.add("card-text");
-        iconEl.innerHTML = "<img src='http://openweathermap.org/img/wn/" + forecast[i].icon + "@2x.png'></img>";
+        iconEl.innerHTML = "<img src='https://openweathermap.org/img/wn/" + forecast[i].icon + "@2x.png'></img>";
         cardBodyEl.appendChild(iconEl);
 
         var tempEl = document.createElement("p");
@@ -195,7 +195,7 @@ var displayWeather = function() {
     curHumidityEl.innerHTML = currentWeather.humidity;
     curWindEl.innerHTML = currentWeather.wind;
     curUvEl.innerHTML = currentWeather.uv;
-    curIconEl.innerHTML = "<img src='http://openweathermap.org/img/wn/" + currentWeather.icon + "@2x.png'></img>";
+    curIconEl.innerHTML = "<img src='https://openweathermap.org/img/wn/" + currentWeather.icon + "@2x.png'></img>";
     uvCheck();
 
 }
